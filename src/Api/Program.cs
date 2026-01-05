@@ -1,4 +1,18 @@
+using Application.Users;
+using Infrastructure.Users;
+using Infrastructure.Security;
+using Application.Users.Register;
+
+
 var builder = WebApplication.CreateBuilder(args);
+
+var jwtKey = builder.Configuration["Jwt:Key"]
+             ?? throw new InvalidOperationException("JWT key is not configured.");
+
+// DI
+builder.Services.AddSingleton<IUserRepository, UserRepositoryInMemory>();
+builder.Services.AddSingleton(new JwtService(jwtKey));
+builder.Services.AddScoped<IRegisterUserUseCase, RegisterUserUseCase>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -23,13 +37,13 @@ var summaries = new[]
 
 app.MapGet("/weatherforecast", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
+    var forecast = Enumerable.Range(1, 5).Select(index =>
+       new WeatherForecast
+       (
+           DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+           Random.Shared.Next(-20, 55),
+           summaries[Random.Shared.Next(summaries.Length)]
+       ))
         .ToArray();
     return forecast;
 })
