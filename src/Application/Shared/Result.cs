@@ -21,5 +21,6 @@ public class Result<T>
     }
 
     public static Result<T> Ok(T value) => new Result<T>(value);
-    public static Fail<T> Fail(Failure error) => new Result<T>(error);
+
+    public static Result<T> Fail(Failure error) => new Result<T>(error); // ✅ CORRECTO
 }
