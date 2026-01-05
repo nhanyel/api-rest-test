@@ -1,5 +1,7 @@
+using Application.Users;
+using Application.Security;
 using Application.Users.Register;
-using Infrastructure.Security;
+using Application.Users.Login;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -10,14 +12,21 @@ namespace Application.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IRegisterUserUseCase _registerUserUseCase;
-        private readonly JwtService _jwtService;
+        private readonly ILoginUserUseCase _loginUserUseCase;
+        private readonly IJwtService _jwtService;
+        private readonly IUserRepository _userRepository;
 
         public UsersController(
             IRegisterUserUseCase registerUserUseCase,
-            JwtService jwtService)
+            ILoginUserUseCase loginUserUseCase,
+            IJwtService jwtService,
+            IUserRepository userRepository)
+
         {
             _registerUserUseCase = registerUserUseCase;
+            _loginUserUseCase = loginUserUseCase;
             _jwtService = jwtService;
+            _userRepository = userRepository;
         }
 
         [HttpPost("register")]
@@ -44,5 +53,17 @@ namespace Application.Controllers
                 Token = token
             });
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
+        {
+            var result = await _loginUserUseCase.Execute(command);
+
+            if (!result.IsSuccess)
+                return Unauthorized(new { Message = result.Error!.Message });
+
+            return Ok(new { Token = result.Value });
+        }
+
     }
 }

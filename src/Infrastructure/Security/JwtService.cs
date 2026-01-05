@@ -1,3 +1,4 @@
+using Application.Security;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -6,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Security
 {
-    public class JwtService
+    public class JwtService : IJwtService
     {
         private readonly string _key;
 

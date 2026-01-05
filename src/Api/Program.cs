@@ -1,9 +1,12 @@
 using Application.Users;
+using Application.Security;
 using Infrastructure.Users;
 using Infrastructure.Security;
 using Application.Users.Register;
+using Application.Users.Login;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +15,9 @@ var jwtKey = builder.Configuration["Jwt:Key"]
 
 // DI
 builder.Services.AddSingleton<IUserRepository, UserRepositoryInMemory>();
-builder.Services.AddSingleton(new JwtService(jwtKey));
+builder.Services.AddSingleton<IJwtService>(new Infrastructure.Security.JwtService(jwtKey));
 builder.Services.AddScoped<IRegisterUserUseCase, RegisterUserUseCase>();
+builder.Services.AddScoped<ILoginUserUseCase, LoginUserUseCase>();
 
 builder.Services.AddControllers();
 
