@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Application.Controllers
 {
+    /// <summary>
+    /// Gestión de usuarios y autenticación.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
@@ -29,7 +32,14 @@ namespace Application.Controllers
             _userRepository = userRepository;
         }
 
+        /// <summary>
+        /// Registra un nuevo usuario y devuelve un JWT.
+        /// </summary>
+        /// <response code="200">Usuario registrado correctamente</response>
+        /// <response code="400">Datos inválidos</response>
         [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
         {
             var result = await _registerUserUseCase.Execute(command);
@@ -54,7 +64,14 @@ namespace Application.Controllers
             });
         }
 
+        /// <summary>
+        /// Autentica un usuario y devuelve un JWT.
+        /// </summary>
+        /// <response code="200">Login exitoso</response>
+        /// <response code="401">Credenciales inválidas</response>
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
         {
             var result = await _loginUserUseCase.Execute(command);
